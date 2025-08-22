@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .calculator {
+            transform: scale(1);
+            transition: transform 0.2s;
+        }
+        .calculator:active {
+            transform: scale(0.98);
+        }
+        .button-animate {
+            transition: all 0.1s ease;
+        }
+        .button-animate:active {
+            transform: scale(0.92);
+            opacity: 0.8;
+        }
+        #history-btn:after {
+            content: "History";
+        }
+        @media (max-width: 640px) {
+            #history-btn:after {
+                content: "Hist";
+            }
+        }
+        .history-item:hover {
+            background-color: #f3f4f6;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden calculator">
+            <div class="p-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-xl font-bold">Calculator</h1>
+                    <button id="theme-toggle" class="text-white p-2 rounded-full hover:bg-white/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="mt-2 p-3 bg-black/20 rounded-lg text-right">
+                    <div id="history-display" class="text-sm opacity-70 h-4 overflow-hidden whitespace-nowrap text-ellipsis" title=""></div>
+                    <input id="display" type="text" class="w-full bg-transparent border-0 text-2xl font-semibold text-right focus:outline-none" readonly>
+                </div>
+            </div>
+
+            <div class="p-4">
+                <div class="grid grid-cols-5 gap-3">
+                    <button class="button-animate col-span-2 bg-red-400 hover:bg-red-500 text-white py-3 px-4 rounded-lg font-bold" onclick="clearAll()">AC</button>
+                    <button class="button-animate bg-gray-200 hover:bg-gray-300 py-3 px-4 rounded-lg font-bold" onclick="backspace()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button class="button-animate bg-gray-200 hover:bg-gray-300 py-3 px-4 rounded-lg font-bold" onclick="toggleSign()">+/-</button>
+                    <button id="history-btn" class="button-animate bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-3 px-4 rounded-lg font-bold" onclick="toggleHistory()"></button>
+
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('7')">7</button>
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('8')">8</button>
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('9')">9</button>
+                    <button class="button-animate bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-3 px-4 rounded-lg font-bold" onclick="appendToDisplay('/')">÷</button>
+                    <button class="button-animate bg-gray-200 hover:bg-gray-300 py-3 px-4 rounded-lg" onclick="calculatePercent()">%</button>
+
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('4')">4</button>
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('5')">5</button>
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('6')">6</button>
+                    <button class="button-animate bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-3 px-4 rounded-lg font-bold" onclick="appendToDisplay('*')">×</button>
+                    <button class="button-animate bg-gray-200 hover:bg-gray-300 py-3 px-4 rounded-lg" onclick="appendToDisplay('(')">(</button>
+
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('1')">1</button>
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('2')">2</button>
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('3')">3</button>
+                    <button class="button-animate bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-3 px-4 rounded-lg font-bold" onclick="appendToDisplay('-')">-</button>
+                    <button class="button-animate bg-gray-200 hover:bg-gray-300 py-3 px-4 rounded-lg" onclick="appendToDisplay(')')">)</button>
+
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('0')">0</button>
+                    <button class="button-animate bg-gray-100 hover:bg-gray-200 py-3 px-4 rounded-lg" onclick="appendToDisplay('.')">.</button>
+                    <button class="button-animate bg-amber-100 hover:bg-amber-200 text-amber-700 py-3 px-4 rounded-lg col-span-2 font-bold" onclick="calculate()">=</button>
+                    <button class="button-animate bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-3 px-4 rounded-lg font-bold" onclick="appendToDisplay('+')">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="history-panel" class="hidden mt-4 bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-4 bg-gray-100">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-bold text-gray-700">Calculation History</h2>
+                    <button onclick="clearHistory()" class="text-red-500 hover:text-red-700 text-sm">Clear All</button>
+                </div>
+            </div>
+            <div id="history-items" class="divide-y divide-gray-200 max-h-64 overflow-y-auto">
+                <!-- History items will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let historyDisplay = document.getElementById('history-display');
+        let historyPanel = document.getElementById('history-panel');
+        let calculationHistory = JSON.parse(localStorage.getItem('calcHistory')) || [];
+        let currentExpression = '';
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+        // Initialize
+        updateTheme();
+        loadHistory();
+
+        // Button click handlers
+        function appendToDisplay(value) {
+            if (value === '.' && display.value.includes('.')) return;
+            if (['+', '-', '*', '/', '('].includes(value) && display.value === '') return;
+            
+            display.value += value;
+            currentExpression += value;
+        }
+
+        function clearAll() {
+            display.value = '';
+            currentExpression = '';
+            historyDisplay.textContent = '';
+        }
+
+        function backspace() {
+            display.value = display.value.slice(0, -1);
+            currentExpression = currentExpression.slice(0, -1);
+        }
+
+        function calculate() {
+            try {
+                const expression = display.value;
+                if (!expression) return;
+                
+                // Replace × and ÷ with * and / for evaluation
+                const sanitizedExpression = expression.replace(/×/g, '*').replace(/÷/g, '/');
+                
+                // Validate expression (basic check)
+                if (!isValidExpression(sanitizedExpression)) {
+                    display.value = 'Error';
+                    return;
+                }
+
+                // Calculate result
+                const result = evaluateExpression(sanitizedExpression);
+                const roundedResult = parseFloat(result.toFixed(10)).toString(); // Round to 10 decimal places
+                
+                // Update display
+                historyDisplay.textContent = expression + ' =';
+                display.value = roundedResult;
+                
+                // Save to history
+                saveToHistory(expression, roundedResult);
+                
+                // Reset current expression
+                currentExpression = roundedResult;
+            } catch (error) {
+                display.value = 'Error';
+                console.error(error);
+            }
+        }
+
+        function isValidExpression(expr) {
+            try {
+                // Check parentheses balance
+                const stack = [];
+                for (let char of expr) {
+                    if (char === '(') stack.push(char);
+                    if (char === ')') {
+                        if (stack.length === 0) return false;
+                        stack.pop();
+                    }
+                }
+                return stack.length === 0;
+            } catch {
+                return false;
+            }
+        }
+
+        function evaluateExpression(expr) {
+            // Create a function and execute safely
+            const fn = new Function(`return ${expr}`);
+            return fn();
+        }
+
+        function toggleSign() {
+            if (display.value.startsWith('-')) {
+                display.value = display.value.substring(1);
+            } else if (display.value !== '') {
+                display.value = '-' + display.value;
+            }
+        }
+
+        function calculatePercent() {
+            if (display.value === '') return;
+            try {
+                const value = parseFloat(display.value);
+                display.value = value / 100;
+                currentExpression = display.value;
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+
+        function saveToHistory(expression, result) {
+            calculationHistory.unshift({
+                expression,
+                result,
+                timestamp: new Date().toISOString()
+            });
+            
+            if (calculationHistory.length > 10) {
+                calculationHistory = calculationHistory.slice(0, 10);
+            }
+            
+            localStorage.setItem('calcHistory', JSON.stringify(calculationHistory));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const historyContainer = document.getElementById('history-items');
+            historyContainer.innerHTML = '';
+            
+            calculationHistory.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'p-3 history-item';
+                historyItem.innerHTML = `
+                    <div class="text-sm text-gray-500">${formatTime(item.timestamp)}</div>
+                    <div class="font-mono">${item.expression} = <span class="font-bold">${item.result}</span></div>
+                `;
+                
+                historyItem.addEventListener('click', () => {
+                    display.value = item.result;
+                    currentExpression = item.result;
+                    historyPanel.classList.add('hidden');
+                });
+                
+                historyContainer.appendChild(historyItem);
+            });
+        }
+
+        function clearHistory() {
+            calculationHistory = [];
+            localStorage.setItem('calcHistory', JSON.stringify(calculationHistory));
+            loadHistory();
+        }
+
+        function toggleHistory() {
+            historyPanel.classList.toggle('hidden');
+        }
+
+        function formatTime(isoString) {
+            const options = { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true,
+                month: 'short',
+                day: 'numeric'
+            };
+            return new Date(isoString).toLocaleString(undefined, options);
+        }
+
+        function updateTheme() {
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('bg-gray-900');
+                document.body.classList.remove('bg-gray-100');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.remove('bg-gray-900');
+                document.body.classList.add('bg-gray-100');
+            }
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+            const key = e.key;
+            
+            // Numbers and operators
+            if (/[0-9+\-*/.=%()]/.test(key)) {
+                e.preventDefault();
+                if (key === 'Enter' || key === '=') {
+                    calculate();
+                } else if (key === '%') {
+                    calculatePercent();
+                } else {
+                    appendToDisplay(key);
+                }
+            }
+            
+            // Backspace and Escape
+            if (key === 'Backspace') {
+                e.preventDefault();
+                backspace();
+            } else if (key === 'Escape') {
+                e.preventDefault();
+                clearAll();
+            }
+        });
+
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('darkMode', isDarkMode);
+            updateTheme();
+        });
+    </script>
+</body>
+</html>
